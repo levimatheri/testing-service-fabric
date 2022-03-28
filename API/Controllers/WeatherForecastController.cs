@@ -40,7 +40,6 @@ namespace API.Controllers
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                 };
 
- 
                 var result = await httpResponseMessage.Content.ReadAsStringAsync();
                 return JsonSerializer.Deserialize<List<WeatherForecast>>(result, options);
             }

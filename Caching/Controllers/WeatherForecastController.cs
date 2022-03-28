@@ -9,11 +9,6 @@ namespace Caching.Controllers
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
         private readonly ILogger<WeatherForecastController> _logger;
         private readonly IReliableStateManager _stateManager;
 
@@ -29,7 +24,7 @@ namespace Caching.Controllers
         {
             //dynamic value = JsonSerializer.Deserialize<dynamic>(data.ToString());
             string value = JsonSerializer.Serialize(data);
-            IReliableDictionary<string, string> votesDictionary = await _stateManager.GetOrAddAsync<IReliableDictionary<string, string>>("mycache");
+            var votesDictionary = await _stateManager.GetOrAddAsync<IReliableDictionary<string, string>>("mycache");
 
             using (ITransaction tx = _stateManager.CreateTransaction())
             {
@@ -51,7 +46,7 @@ namespace Caching.Controllers
         [HttpGet(Name = "GetWeatherForecast")]
         public async Task<IActionResult> Get(string cacheKey)
         {
-            IReliableDictionary<string, string> votesDictionary = await _stateManager.GetOrAddAsync<IReliableDictionary<string, string>>("mycache");
+            var votesDictionary = await _stateManager.GetOrAddAsync<IReliableDictionary<string, string>>("mycache");
 
             using (ITransaction tx = _stateManager.CreateTransaction())
             {
@@ -64,16 +59,5 @@ namespace Caching.Controllers
 
             return Ok();
         }
-        //[HttpGet(Name = "GetWeatherForecast")]
-        //public IEnumerable<WeatherForecast> Get()
-        //{
-        //    return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-        //    {
-        //        Date = DateTime.Now.AddDays(index),
-        //        TemperatureC = Random.Shared.Next(-20, 55),
-        //        Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-        //    })
-        //    .ToArray();
-        //}
     }
 }
